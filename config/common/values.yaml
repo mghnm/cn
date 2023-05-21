@@ -1,0 +1,10 @@
+db:
+  user: "dbuser"
+  password: "dbpassword"
+  database: "default"
+
+urls:
+  db: "postgresql.postgresql.svc.cluster.local"
+  prometheus: "prometheus.prometheus.svc.cluster.local"
+  statsdExporter: "prometheus-statsd-exporter.prometheus-statsd-exporter.svc.cluster.local"
+  grafana: "grafana.grafana.svc.cluster.local"

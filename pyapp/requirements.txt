@@ -1,0 +1,4 @@
+Flask==2.2.2
+psycopg2==2.9.5
+datadog==0.44.0
+uwsgi==2.0.21

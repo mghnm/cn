@@ -1,0 +1,9 @@
+# Override usernames and passwords
+# External secret manager can be used to populate these using templating (GCP Secret Manager with Helmfile etc.)
+auth:
+  enablePostgresUser: true
+  postgresPassword: "mysecretpassword"
+  username: {{ .Values.db.user }}
+  password: {{ .Values.db.password }}
+  database: {{ .Values.db.database }}
+

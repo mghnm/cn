@@ -1,0 +1,8 @@
+dbConf:
+  user: {{ .Values.db.user }}
+  host: "{{ .Values.urls.db }}"
+  name: {{ .Values.db.database }}
+  pass: {{ .Values.db.password }}
+
+statsdConf:
+  host: "{{ .Values.urls.statsdExporter }}"

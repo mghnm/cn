@@ -1,0 +1,2 @@
+dbConf:
+  port: "5432"

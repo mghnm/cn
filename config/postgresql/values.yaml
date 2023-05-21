@@ -1,0 +1,5 @@
+# Override persistent volume size and enable persistence
+primary:
+  persistence:
+    enabled: true
+    size: 10Gi
