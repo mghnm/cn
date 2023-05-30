@@ -36,8 +36,9 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /dbhealth
               port: http
+            initialDelaySeconds: 6
           readinessProbe:
             httpGet:
               path: /

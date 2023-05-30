@@ -51,4 +51,5 @@ releases:
   <<: *bitnami
 
 - name: "pyapp"
+  version: 0.9.1
   <<: *local-chart

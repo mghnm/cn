@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: pyapp
+  repository: docker.io/library/pyapp
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.8.0"
+  tag: "0.9.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -28,7 +28,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: NodePort
+  type: LoadBalancer
   port: 80
   targetPort: 5000
 
