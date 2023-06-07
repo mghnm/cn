@@ -48,7 +48,7 @@ jobs:
       - name: Run linting
         run: |
           pwd
-          ls -al /
+          ls -al ${{ github.workspace }}
           venv/bin/flake8 pyapp/
 
   unit_tests:
