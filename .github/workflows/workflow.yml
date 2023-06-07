@@ -25,22 +25,18 @@ jobs:
           source venv/bin/activate
           pip install -r .github/workflows/requirements.txt
 
-      - name: Archive dependencies
-        uses: actions/upload-artifact@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
         with:
-          name: dependencies
           path: venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
 
   linting:
     needs: setup
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download dependencies
-        uses: actions/download-artifact@v2
-        with:
-          name: dependencies
-          path: venv
 
       - name: Activate virtual environment
         run: source venv/bin/activate
@@ -53,13 +49,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Download dependencies
-        uses: actions/download-artifact@v2
-        with:
-          name: dependencies
-          path: venv
-
+    
       - name: Activate virtual environment
         run: source venv/bin/activate
 
