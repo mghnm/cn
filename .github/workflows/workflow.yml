@@ -18,29 +18,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+          cache: 'pip'
 
       - name: Install dependencies
         run: |
-          python -m venv venv
-          source venv/bin/activate
           pip install -r .github/workflows/requirements.txt
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
 
   linting:
     needs: setup
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Activate virtual environment
-        run: source venv/bin/activate
-
       - name: Run linting
         run: flake8 ./pyapp/
 
@@ -49,9 +37,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
-      - name: Activate virtual environment
-        run: source venv/bin/activate
-
       - name: Run unit tests
         run: pytest test/
