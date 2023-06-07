@@ -27,6 +27,7 @@ jobs:
 
       - if: steps.python_cache.outputs.cahce-hit != 'true'
         run: |
+          echo "Working directory: ${{ github.workspace }}"
           if [ -d "venv" ]; then rm -rf venv; fi
           python3 -m venv venv
           venv/bin/python3 -m pip install -r .github/workflows/requirements.txt
