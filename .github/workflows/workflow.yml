@@ -44,11 +44,8 @@ jobs:
           path: venv
           key: ${{ needs.setup.outputs.cahce-key }}
 
-      - name: Activate virtual environment
-        run: source venv/bin/activate
-
       - name: Run linting
-        run: flake8 ./pyapp/
+        run: venv/bin/flake8 ./pyapp/
 
   unit_tests:
     needs: setup
@@ -61,8 +58,5 @@ jobs:
           path: venv
           key: ${{ needs.setup.outputs.cahce-key }}
 
-      - name: Activate virtual environment
-        run: source venv/bin/activate
-
       - name: Run unit tests
-        run: pytest test/
+        run: venv/bin/pytest test/
