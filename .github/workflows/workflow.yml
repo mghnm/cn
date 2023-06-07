@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: venv
-          key: ${{ steps.setup_python.outputs.python-version }}-pip-${{ hashFiles('.github/workflows/requirements.txt') }}
+          key: ${{ steps.setup_python.outputs.python-version }}-pip-${{ github.run_number }}
 
       - if: steps.python_cache.outputs.cahce-hit != 'true'
         run: |
@@ -31,7 +31,7 @@ jobs:
           python3 -m venv venv
           venv/bin/python3 -m pip install -r .github/workflows/requirements.txt
     outputs:
-      cahce-key: ${{ steps.setup_python.outputs.python-version }}-pip-${{  always() && hashFiles('.github/workflows/requirements.txt') }}
+      cahce-key: ${{ steps.setup_python.outputs.python-version }}-pip-${{ github.run_number }}
 
   linting:
     needs: setup
