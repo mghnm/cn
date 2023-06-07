@@ -19,13 +19,13 @@ jobs:
         with:
           python-version: 3.8
 
-      - id: python_cache
+      - id: code_cache
         uses: actions/cache@v3
         with:
-          path: venv
+          path: ${{ github.workspace }}
           key: ${{ steps.setup_python.outputs.python-version }}-pip-${{ github.run_number }}
 
-      - if: steps.python_cache.outputs.cahce-hit != 'true'
+      - if: steps.code_cache.outputs.cahce-hit != 'true'
         run: |
           echo "Working directory: ${{ github.workspace }}"
           if [ -d "venv" ]; then rm -rf venv; fi
@@ -42,14 +42,14 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          path: venv
+          path: ${{ github.workspace }}
           key: ${{ needs.setup.outputs.cahce-key }}
 
       - name: Run linting
         run: |
           pwd
           ls -al ${{ github.workspace }}
-          venv/bin/flake8 pyapp/
+          venv/bin/flake8 ${{ github.workspace }}/pyapp/
 
   unit_tests:
     needs: setup
@@ -59,8 +59,8 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          path: venv
+          path: ${{ github.workspace }}
           key: ${{ needs.setup.outputs.cahce-key }}
 
       - name: Run unit tests
-        run: venv/bin/pytest pyapp/test/
+        run: venv/bin/pytest ${{ github.workspace }}/pyapp/test/
