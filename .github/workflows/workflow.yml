@@ -20,20 +20,48 @@ jobs:
           python-version: 3.8
 
       - name: Install dependencies
-        run: pip install -r .github/workflows/requirements.txt
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r .github/workflows/requirements.txt
+
+      - name: Archive dependencies
+        uses: actions/upload-artifact@v2
+        with:
+          name: dependencies
+          path: venv
 
   linting:
     needs: setup
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download dependencies
+        uses: actions/download-artifact@v2
+        with:
+          name: dependencies
+          path: venv
+
+      - name: Activate virtual environment
+        run: source venv/bin/activate
+
       - name: Run linting
-        run: pip install flake8 && flake8 .
+        run: flake8 ./pyapp/
 
   unit_tests:
     needs: setup
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Download dependencies
+        uses: actions/download-artifact@v2
+        with:
+          name: dependencies
+          path: venv
+
+      - name: Activate virtual environment
+        run: source venv/bin/activate
+
       - name: Run unit tests
         run: pytest test/
