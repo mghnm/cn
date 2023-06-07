@@ -45,7 +45,10 @@ jobs:
           key: ${{ needs.setup.outputs.cahce-key }}
 
       - name: Run linting
-        run: venv/bin/flake8 pyapp/
+        run: |
+          pwd
+          ls -al /
+          venv/bin/flake8 pyapp/
 
   unit_tests:
     needs: setup
