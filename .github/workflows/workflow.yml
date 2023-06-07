@@ -27,7 +27,6 @@ jobs:
 
       - if: steps.code_cache.outputs.cahce-hit != 'true'
         run: |
-          echo "Working directory: ${{ github.workspace }}"
           if [ -d "venv" ]; then rm -rf venv; fi
           python3 -m venv venv
           venv/bin/python3 -m pip install -r .github/workflows/requirements.txt
@@ -47,8 +46,6 @@ jobs:
 
       - name: Run linting
         run: |
-          pwd
-          ls -al ${{ github.workspace }}
           venv/bin/flake8 ${{ github.workspace }}/pyapp/
 
   unit_tests:
