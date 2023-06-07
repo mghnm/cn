@@ -31,7 +31,7 @@ jobs:
           python3 -m venv venv
           venv/bin/python3 -m pip install -r .github/workflows/requirements.txt
     outputs:
-      cahce-key: ${{ steps.setup_python.outputs.python-version }}-pip-${{ hashFiles('.github/workflows/requirements.txt') }}
+      cahce-key: ${{ steps.setup_python.outputs.python-version }}-pip-${{  always() && hashFiles('.github/workflows/requirements.txt') }}
 
   linting:
     needs: setup
