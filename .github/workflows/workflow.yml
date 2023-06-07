@@ -45,7 +45,7 @@ jobs:
           key: ${{ needs.setup.outputs.cahce-key }}
 
       - name: Run linting
-        run: venv/bin/flake8 ./pyapp/
+        run: venv/bin/flake8 pyapp/
 
   unit_tests:
     needs: setup
@@ -59,4 +59,4 @@ jobs:
           key: ${{ needs.setup.outputs.cahce-key }}
 
       - name: Run unit tests
-        run: venv/bin/pytest test/
+        run: venv/bin/pytest pyapp/test/
