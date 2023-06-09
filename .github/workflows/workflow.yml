@@ -7,20 +7,57 @@ on:
       - synchronize
 
 jobs:
-  linting:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - id: setup_python
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - id: code_cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ steps.setup_python.outputs.python-version }}-pip-${{ github.run_number }}
+
+      - if: steps.code_cache.outputs.cahce-hit != 'true'
+        run: |
+          if [ -d "venv" ]; then rm -rf venv; fi
+          python3 -m venv venv
+          venv/bin/python3 -m pip install -r .github/workflows/requirements.txt
+    outputs:
+      cahce-key: ${{ steps.setup_python.outputs.python-version }}-pip-${{ github.run_number }}
+
+  linting:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ needs.setup.outputs.cahce-key }}
 
       - name: Run linting
-        run: pip install flake8 && flake8
+        run: |
+          venv/bin/flake8 ${{ github.workspace }}/pyapp/
+
+  unit_tests:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ needs.setup.outputs.cahce-key }}
+
+      - name: Run unit tests
+        run: venv/bin/pytest ${{ github.workspace }}/pyapp/test/
