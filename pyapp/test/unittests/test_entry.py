@@ -1,6 +1,6 @@
 from datetime import datetime
 import pytest
-from entry import Entry
+from models.entry import Entry
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def test_entry_properties(new_entry):
 def test_entry_entrytime_default(new_entry):
     # Ensure entrytime is set to the current UTC time when not provided
     assert isinstance(new_entry.entrytime, datetime)
-    assert new_entry.entrytime <= datetime.utcnow()
+    assert new_entry.entrytime <= datetime.now(datetime.UTC)
 
 
 def test_entry_entrytime_custom():
