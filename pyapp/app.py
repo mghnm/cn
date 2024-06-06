@@ -22,6 +22,7 @@ CLIENT = None
 app = Flask(__name__)
 setup_metrics(app)
 
+
 # Function to initialize db connection
 @app.before_first_request
 def init():
@@ -46,14 +47,22 @@ def teardown():
 # Set teardown to trigger on exit so that the database connection is destroyed
 atexit.register(teardown)
 
+
 # Get status of the db connection
 @app.route("/dbhealth")
 def db_connection_health():
     # Platform.node just added as a sanity check when running multiple replicas
     if CONNECTED:
-        return Response(f"Database connection healthy on {platform.node()}", mimetype='text/plain', status=200)
+        return Response(
+            f"Database connection healthy on {platform.node()}",
+            mimetype='text/plain',
+            status=200)
     else:
-        return Response(f"Database connection unhealthy {platform.node()}", mimetype='text/plain', status=500)
+        return Response(
+            f"Database connection unhealthy {platform.node()}",
+            mimetype='text/plain',
+            status=500)
+
 
 # Get status of the db connection
 @app.route("/")
@@ -61,9 +70,14 @@ def get_main_guest_log():
     global CLIENT
     try:
         result = CLIENT.fetch_all_entries()
-        return Response(json.dumps(result, default=str), mimetype='application/json')
+        return Response(
+            json.dumps(
+                result,
+                default=str),
+            mimetype='application/json')
     except Exception as e:
         return Response(f"Exception: {e}", mimetype='text/plain')
+
 
 # Post method to add new guestbook entries
 @app.route("/", methods=['POST'])
@@ -77,10 +91,13 @@ def post_entry_to_guest_log():
         result = CLIENT.insert_entry(entry)
         if result:
             # Row affected
-            return Response(f"Created", mimetype='text/plain', status=201)
+            return Response("Created", mimetype='text/plain', status=201)
         else:
             # Row not affected
-            return Response(f"Request not processed", mimetype='text/plain', status=422)
+            return Response(
+                "Request not processed",
+                mimetype='text/plain',
+                status=422)
     except Exception as e:
         return Response(f"Exception: {e}", mimetype='text/plain', status=500)
 
