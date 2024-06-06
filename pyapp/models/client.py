@@ -4,15 +4,18 @@ import time
 from models.entry import Entry
 
 
-# Guest book client is a class intended to represent a client connection to the SQL database
+# Guest book client is a class intended to represent a client connection to the
+# SQL database
 # When this client is initialized it should connect to the database
-# The client should offer methods that manipulate the database like viewing all entries
+# The client should offer methods that manipulate the database like viewing all
+# entries
 # and adding new entries
 
 
 class GuestbookClient:
     # Initialize the guestbook client object by connecting to the database
-    # The intention is that the user does not need to access a connection directly
+    # The intention is that the user does not need to access a connection
+    # directly
     def __init__(self, database, user, password, host, port):
 
         self._database = database
@@ -46,17 +49,21 @@ class GuestbookClient:
                     # Backoff
                     delay *= 2
                 else:
-                    # At this point we raise an error so that the caller can handle it
+                    # At this point we raise an error so that the caller can
+                    # handle it
                     raise Exception(
-                        f"Error connecting to the database; rety attempts exhausted. Error: {e}")
+                        f"Error connecting to the database; \
+                        rety attempts exhausted. Error: {e}")
 
-    # A disconnect method to terminate an open database connection. Normally this should be executed on graceful termination of the application
+    # A disconnect method to terminate an open database connection. Normally
+    # this should be executed on graceful termination of the application
     def disconnect(self):
         if self._connection is not None:
             self._connection.close()
             print("Disconnected from the database")
 
-    # Allow the user to execute custom queries. However other abstractions will be provided for the two main usecases.
+    # Allow the user to execute custom queries. However other abstractions
+    # will be provided for the two main usecases.
     def execute_query(self, query, parameters=None):
         try:
             cursor = self._connection.cursor(cursor_factory=RealDictCursor)
@@ -71,25 +78,28 @@ class GuestbookClient:
             return result
         except Exception as e:
             raise Exception(
-                f"Query execution error on the following query \"{query}\". Error: {e}")
+                f"Query execution error on the following query \"{query}\". \
+                Error: {e}")
         finally:
             cursor.close()
 
-    # The first abstaction includes protection from sqlinjections when inserting entries
+    # The first abstaction includes protection from sqlinjections when
+    # inserting entries
     def insert_entry(self, entry: Entry):
         try:
-            result = self.execute_query("INSERT INTO guestbook(firstname, lastname, message, entrytime) \
+            result = self.execute_query(
+                "INSERT INTO \
+                guestbook(firstname, lastname, message, entrytime) \
                     VALUES (%s, %s, %s, %s)",
-                                        (entry.firstname,
-                                         entry.lastname,
-                                         entry.message,
-                                         entry.entrytime
-                                         )
-                                        )
+                (entry.firstname,
+                 entry.lastname,
+                 entry.message,
+                 entry.entrytime))
             return result
         except Exception as e:
             raise Exception(
-                f"Insertion error for entry with the following parameters:  Message: \"{entry.message}\", \
+                f"Insertion error for entry with the following parameters: \
+                Message: \"{entry.message}\", \
                 Entrytime: \"{entry.entrytime}\". Error: {e}")
 
     # The second abstraction to list all entries
@@ -104,14 +114,15 @@ class GuestbookClient:
     # Helper function to initialize the guestbook table
     def _initialize_table(self):
         try:
-            result = self.execute_query("CREATE TABLE IF NOT EXISTS guestbook( \
-           firstname varchar(100), \
-           lastname varchar(100), \
-           message varchar(280), \
-           entrytime timestamptz  \
-           )"
-                                        )
+            result = self.execute_query(
+                "CREATE TABLE IF NOT EXISTS guestbook( \
+                firstname varchar(100), \
+                lastname varchar(100), \
+                message varchar(280), \
+                entrytime timestamptz  \
+                )")
             return result
         except Exception as e:
             raise Exception(
-                f"Initialization error while creating guestbook table. Error: {e}")
+                f"Initialization error while creating guestbook table.\
+                Error: {e}")
