@@ -18,14 +18,9 @@ DB_PORT = os.getenv('DB_PORT')
 CONNECTED = None
 CLIENT = None
 
-# Initialize flask app
-app = Flask(__name__)
-setup_metrics(app)
 
-
-# Function to initialize db connection
-@app.before_first_request
-def init():
+# Define code for initializing app
+def init_db():
     global CLIENT
     global CONNECTED
     try:
@@ -35,6 +30,12 @@ def init():
     except Exception as e:
         print(f"{e}")
         CONNECTED = False
+
+
+# Initialize flask app
+app = Flask(__name__)
+setup_metrics(app)
+init_db()
 
 
 # Function to teardown database connection
@@ -49,7 +50,7 @@ atexit.register(teardown)
 
 
 # Get status of the db connection
-@app.route("/dbhealth")
+@app.get("/dbhealth")
 def db_connection_health():
     # Platform.node just added as a sanity check when running multiple replicas
     if CONNECTED:
@@ -65,7 +66,7 @@ def db_connection_health():
 
 
 # Get status of the db connection
-@app.route("/")
+@app.get("/")
 def get_main_guest_log():
     global CLIENT
     try:
@@ -80,7 +81,7 @@ def get_main_guest_log():
 
 
 # Post method to add new guestbook entries
-@app.route("/", methods=['POST'])
+@app.post("/")
 def post_entry_to_guest_log():
     global CLIENT
     try:

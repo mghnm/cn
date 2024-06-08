@@ -1,5 +1,5 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import psycopg
+from psycopg.rows import dict_row
 import time
 from models.entry import Entry
 
@@ -34,7 +34,7 @@ class GuestbookClient:
         delay = 2
         while retries < 3:
             try:
-                connection = psycopg2.connect(
+                connection = psycopg.connect(
                     dbname=self._database,
                     user=self._user,
                     password=self._password,
@@ -62,29 +62,49 @@ class GuestbookClient:
             self._connection.close()
             print("Disconnected from the database")
 
-    # Allow the user to execute custom queries. However other abstractions
-    # will be provided for the two main usecases.
+    # This method is a wrapper for handling querys
+
     def execute_query(self, query, parameters=None):
+        cursor = None
         try:
-            cursor = self._connection.cursor(cursor_factory=RealDictCursor)
+            cursor = self._connection.cursor(row_factory=dict_row)
             cursor.execute(query, parameters)
             self._connection.commit()
-            result = cursor.fetchall()
+
+            # Determine if the query was a SELECT
+            if cursor.description is not None:
+                # Fetch the result for SELECT queries
+                result = cursor.fetchall()
+            else:
+                # For non-SELECT queries, just return the row count
+                result = cursor.rowcount
+
             return result
-        except psycopg2.ProgrammingError:
-            # The query was not a select query handle case by ignoring fetchall
-            # result has error
-            result = cursor.rowcount
-            return result
-        except Exception as e:
+        except psycopg.ProgrammingError as pe:
+            self._connection.rollback()
             raise Exception(
-                f"Query execution error on the following query \"{query}\". \
-                Error: {e}")
+                f"ProgrammingError during query execution: {
+                    query}. Parameters: {parameters}. Error: {pe}"
+            )
+        except psycopg.IntegrityError as ie:
+            self._connection.rollback()
+            raise Exception(
+                f"IntegrityError during query execution: {
+                    query}. Parameters: {parameters}. Error: {ie}"
+            )
+        except Exception as e:
+            self._connection.rollback()
+            raise Exception(
+                f"General error during query execution: {
+                    query}. Parameters: {parameters}. Error: {e}"
+            )
         finally:
-            cursor.close()
+            if cursor is not None:
+                cursor.close()
 
     # The first abstaction includes protection from sqlinjections when
     # inserting entries
+
     def insert_entry(self, entry: Entry):
         try:
             result = self.execute_query(
