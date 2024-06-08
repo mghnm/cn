@@ -1,140 +1,73 @@
-<!-- markdownlint-configure-file {
-  "MD013": {
-    "code_blocks": false,
-    "tables": false
-  },
-  "MD033": false,
-  "MD041": false
-} -->
+# Dependencies
 
-<div align="center" markdown="1">
+## Charts
 
-# Helmfile
+The charts we are using are the following:
 
-[![Tests](https://github.com/helmfile/helmfile/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/helmfile/helmfile/actions/workflows/ci.yaml?query=branch%3Amain)
-[![Container Image Repository on GHCR](https://ghcr-badge.deta.dev/helmfile/helmfile/latest_tag?trim=major&label=latest "Docker Repository on ghcr")](https://github.com/helmfile/helmfile/pkgs/container/helmfile)
-[![Go Report Card](https://goreportcard.com/badge/github.com/helmfile/helmfile)](https://goreportcard.com/report/github.com/helmfile/helmfile)
-[![Slack Community #helmfile](https://slack.sweetops.com/badge.svg)](https://slack.sweetops.com)
-[![Documentation](https://readthedocs.org/projects/helmfile/badge/?version=latest&style=flat)](https://helmfile.readthedocs.io/en/latest/)
+- postgresql-15.5.4 from [bitnami](https://charts.bitnami.com/bitnami). `helm repo add bitnami https://charts.bitnami.com/bitnami` 
+- From same repo as above we get grafana-11.3.3
 
-Deploy Kubernetes Helm Charts
-<br />
 
-</div>
+- prometheus-22.6.2 (community) from [prometheus-community](https://prometheus-community.github.io/helm-charts). `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
+- From same helm repo we get statsd-exporter-0.8.0
 
-English | [简体中文](./README-zh_CN.md)
+It is probably better to install [helmfile](https://github.com/helmfile/helmfile) on your local machine and run the helmfile.yaml instead. That will make sure all the repostories and apps are installed with the right versions.
 
-## About
-
-Helmfile is a declarative spec for deploying helm charts. It lets you...
-
-* Keep a directory of chart value files and maintain changes in version control.
-* Apply CI/CD to configuration changes.
-* Periodically sync to avoid skew in environments.
-
-To avoid upgrades for each iteration of `helm`, the `helmfile` executable delegates to `helm` - as a result, `helm` must be installed.
-
-## Highlights
-
-**Declarative**: Write, version-control, apply the desired state file for visibility and reproducibility.
-
-**Modules**: Modularize common patterns of your infrastructure, distribute it via Git, S3, etc. to be reused across the entire company (See [#648](https://github.com/roboll/helmfile/pull/648))
-
-**Versatility**: Manage your cluster consisting of charts, [kustomizations](https://github.com/kubernetes-sigs/kustomize), and directories of Kubernetes resources, turning everything to Helm releases (See [#673](https://github.com/roboll/helmfile/pull/673))
-
-**Patch**: JSON/Strategic-Merge Patch Kubernetes resources before `helm-install`ing, without forking upstream charts (See [#673](https://github.com/roboll/helmfile/pull/673))
-
-## Status
-
-May 2024 Update - We are inviting Helmfile v1 rc testers! Please see the v1 proposal [here](docs/proposals/towards-1.0.md) and the latest rc release in the [releases](/release) page. Please file feature requests in [Discussions](/discussions) and bugs in [Issues](/issues).
-
-March 2022 Update - The helmfile project has been moved to [helmfile/helmfile](https://github.com/helmfile/helmfile) from the former home `roboll/helmfile`. Please see roboll/helmfile#1824 for more information.
-
-## Installation
-
-**1: Binary Installation**
-
-download one of [releases](https://github.com/helmfile/helmfile/releases)
-
-**2: Package Manager**
-
-* Archlinux: install via `pacman -S helmfile`
-* openSUSE: install via `zypper in helmfile` assuming you are on Tumbleweed; if you are on Leap you must add the [kubic](https://download.opensuse.org/repositories/devel:/kubic/) repo for your distribution version once before that command, e.g. `zypper ar https://download.opensuse.org/repositories/devel:/kubic/openSUSE_Leap_\$releasever kubic`
-* Windows (using [scoop](https://scoop.sh/)): `scoop install helmfile`
-* macOS (using [homebrew](https://brew.sh/)): `brew install helmfile`
-
-**3: Container**
-
-For more details, see [run as a container](https://helmfile.readthedocs.io/en/latest/#running-as-a-container)
-
-> Make sure to run `helmfile init` once after installation. Helmfile uses the [helm-diff](https://github.com/databus23/helm-diff) plugin.
-
-## Getting Started
-
-Let's start with a simple `helmfile` and gradually improve it to fit your use-case!
-
-Suppose the `helmfile.yaml` representing the desired state of your helm releases looks like:
-
-```yaml
-repositories:
-- name: prometheus-community
-  url: https://prometheus-community.github.io/helm-charts
-
-releases:
-- name: prom-norbac-ubuntu
-  namespace: prometheus
-  chart: prometheus-community/prometheus
-  set:
-  - name: rbac.create
-    value: false
+```
+curl -L -o /tmp/helmfile_0.149.0_linux_amd64.tar.gz https://github.com/helmfile/helmfile/releases/download/v0.149.0/helmfile_0.149.0_linux_amd64.tar.gz \
+&& tar -zxvf /tmp/helmfile_0.149.0_linux_amd64.tar.gz -C /tmp \
+&& mv /tmp/helmfile /usr/local/bin/helmfile \
+&& helmfile version
 ```
 
-Sync your Kubernetes cluster state to the desired one by running:
+You also need to install helm and helm diff
 
-```console
-helmfile apply
-```
+`helm plugin install --version v3.6.0 https://github.com/databus23/helm-diff`
 
-Congratulations! You now have your first Prometheus deployment running inside
- your cluster.
+## Local setup for testing
 
-Iterate on the `helmfile.yaml` by referencing:
+Currently I am using minikube on windows 10 installed through the installer: [minikube installation page](https://minikube.sigs.k8s.io/docs/start/)
 
-* [Configuration](https://helmfile.readthedocs.io/en/latest/#configuration)
-* [CLI reference](https://helmfile.readthedocs.io/en/latest/#cli-reference)
-* [Helmfile Best Practices Guide](https://helmfile.readthedocs.io/en/latest/writing-helmfile/)
+The installer will add the minikube executable to your PATH by default. Also I make use of metallb addon in minikube in order to test my application with replication and load-balancing.
 
-## Docs
+For things like testing with kubectl helm and docker I am using WSL2 [example guide](https://pureinfotech.com/install-windows-subsystem-linux-2-windows-10/). For docker specifically you need to install docker desktop and enable WSL2 based engine.
 
-Please read [complete documentation](https://helmfile.readthedocs.io/)
+### Tips and Tricks
 
-## Contributing
+For a smooth experience that allows me to run kubectl and minikube from WSL you need to do the following:
 
-Welcome to contribute together to make helmfile better: [contributing doc](https://helmfile.readthedocs.io/en/latest/contributing/)
+#### Setting up kubectl
 
-## Attribution
+1. After starting your minikube cluster you will find your kube config here
+    ```
+    more %userprofile%\.kube\config
+    ```
+2. Copy the config and make some adjustments to the .clusters.cluster.certificate-authority path and .users.user.client-certificate .users.user.client-key path the adjustments should follow the example below
+    ```
+    original:
+        C:\Users\youruser\.minikube\ca.crt
+    adjusted:
+        /mnt/c/Users/youruser/.minikube/ca.crt
+    ```
+3. Paste the new config into your local kube config path inside your WSL2 environment
+    ```
+     vim ~/.kube/config
+    ```
+4. You should now be able to use kubectl commands inside WSL2 against your minikube cluster
 
-We use:
+#### Setting up minikube
 
-* [semtag](https://github.com/pnikosis/semtag) for automated semver tagging.
-I greatly appreciate the author(pnikosis)'s effort on creating it and their
-kindness to share it!
-
-## Users
-
-Helmfile has been used by many users in production:
-
-* [gitlab.com](https://gitlab.com)
-* [reddit.com](https://reddit.com)
-* [Jenkins](https://jenkins.io)
-* ...
-
-For more users, please see: [Users](https://helmfile.readthedocs.io/en/latest/users/)
-
-## License
-
-[MIT](https://github.com/helmfile/helmfile/blob/main/LICENSE)
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=helmfile/helmfile&type=Date)](https://star-history.com/#helmfile/helmfile&Date)
+1. In your WSL2 environment create a minikube file un usr local bin
+    ```
+    vim /usr/local/bin/minikube
+    ```
+2. Paste the following script into the file (assuming your minikube.exe is on that path)
+    ```
+    #!/bin/sh
+    /mnt/c/Program\ Files/Kubernetes/Minikube/minikube.exe
+    ```
+3. chmod the file so that it is executable
+    ```
+     chmod +x /usr/local/bin/minikube
+    ```
+4. You should now be able to use minikube commands from within WSL2
