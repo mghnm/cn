@@ -4,12 +4,12 @@
 
 The charts we are using are the following:
 
-- postgresql-12.1.3 from [bitnami](https://charts.bitnami.com/bitnami). `helm repo add bitnami https://charts.bitnami.com/bitnami` 
-- From same repo as above we get grafana-8.2.20
+- postgresql-15.5.4 from [bitnami](https://charts.bitnami.com/bitnami). `helm repo add bitnami https://charts.bitnami.com/bitnami` 
+- From same repo as above we get grafana-11.3.3
 
 
-- prometheus-19.0.2 (community) from [prometheus-community](https://prometheus-community.github.io/helm-charts). `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
-- From same helm repo we get statsd-exporter-0.7.0
+- prometheus-22.6.2 (community) from [prometheus-community](https://prometheus-community.github.io/helm-charts). `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
+- From same helm repo we get statsd-exporter-0.8.0
 
 It is probably better to install [helmfile](https://github.com/helmfile/helmfile) on your local machine and run the helmfile.yaml instead. That will make sure all the repostories and apps are installed with the right versions.
 
