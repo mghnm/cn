@@ -89,14 +89,14 @@ class GuestbookClient:
         except psycopg.IntegrityError as ie:
             self._connection.rollback()
             raise Exception(
-                f"IntegrityError during query execution: {
-                    query}. Parameters: {parameters}. Error: {ie}"
+                f"IntegrityError during query execution: \
+                {query}. Parameters: {parameters}. Error: {ie}"
             )
         except Exception as e:
             self._connection.rollback()
             raise Exception(
-                f"General error during query execution: {
-                    query}. Parameters: {parameters}. Error: {e}"
+                f"General error during query execution: \
+                {query}. Parameters: {parameters}. Error: {e}"
             )
         finally:
             if cursor is not None:
