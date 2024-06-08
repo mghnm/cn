@@ -83,8 +83,8 @@ class GuestbookClient:
         except psycopg.ProgrammingError as pe:
             self._connection.rollback()
             raise Exception(
-                f"ProgrammingError during query execution: {
-                    query}. Parameters: {parameters}. Error: {pe}"
+                f"ProgrammingError during query execution: \
+                {query}. Parameters: {parameters}. Error: {pe}"
             )
         except psycopg.IntegrityError as ie:
             self._connection.rollback()
