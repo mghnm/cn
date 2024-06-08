@@ -17,7 +17,7 @@ jobs:
       - id: setup_python
         uses: actions/setup-python@v3
         with:
-          python-version: 3.8
+          python-version: '3.12'
 
       - id: code_cache
         uses: actions/cache@v3
